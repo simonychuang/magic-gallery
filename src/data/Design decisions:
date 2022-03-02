@@ -6,3 +6,5 @@ with automatic JSON data transformation, easy implementation of response timeout
 dotenv: use environment variables to determine api endpoints, future might use different endpoints for production vs staging apis
 
 sdk: use the sdk to fetch data instead
+
+inclusion of react-router

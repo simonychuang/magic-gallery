@@ -52,10 +52,83 @@ const StyledSearch = styled.input`
   }
 `;
 
+const StyledFilters = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 2em;
+`;
+
+const StyledButton = styled.button`
+  height: 3em;
+  border: 1px solid #abadae;
+  border-radius: 4px;
+  background: linear-gradient(0deg, #f8f8f8 0%, #ffffff 100%);
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05);
+  margin-left: 2em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const StyledButtonText = styled.span`
+  color: #0d0f0f;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.06px;
+`;
+
+const StyledSwitchWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0 2em;
+`;
+
+const StyledSwitchLabel = styled.label`
+  width: 42px;
+  height: 26px;
+  border-radius: 15px;
+  background: #bebebe;
+  cursor: pointer;
+  margin: 0 0.5em;
+  &::after {
+    content: "";
+    display: block;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    margin: 3px;
+    background: #ffffff;
+    box-shadow: 1px 3px 3px 1px rgba(0, 0, 0, 0.2);
+    transition: 0.2s;
+  }
+`;
+
+const StyledSwitch = styled.input`
+  opacity: 0;
+  z-index: 1;
+  border-radius: 15px;
+  display: none;
+  &:checked + ${StyledSwitchLabel} {
+    &::after {
+      content: "";
+      display: block;
+      border-radius: 50%;
+      margin-left: 21px;
+      transition: 0.2s;
+    }
+  }
+`;
+
 export const HomePage = () => {
   const [cardData, setCardData] = useState<CardType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchParams, setSearchParams] = useSearchParams({});
+  const [checkedColors, setCheckedColors] = useState<string[]>([]);
+  const [logicalAnd, setLogicalAnd] = useState<boolean>(false);
   const cardQuery = searchParams.get('card') || '';
   const colorsQuery = searchParams.get('colors')|| '';
   const [searchStr, setSearchStr] = useState<string>(cardQuery);
@@ -63,8 +136,7 @@ export const HomePage = () => {
   useEffect(() => {
     if (cardQuery != null || colorsQuery != null) {
       // handle case where there's search parameters in the url
-      console.log(cardQuery)
-      mtgsdk.card.where({ page: 1, pageSize: 12, contains:'imageUrl', name: cardQuery })
+      mtgsdk.card.where({ page: 1, pageSize: 12, contains:'imageUrl', name: cardQuery, colors: colorsQuery })
       .then((cards: CardType[]) => {
         setCardData(cards);
       })
@@ -84,9 +156,28 @@ export const HomePage = () => {
   }
 
   const submitSearch = () => {
-    setSearchParams({ card: searchStr });
+    let colorsQueryStr = '';
+
+    if (checkedColors.length > 0) {
+      if (logicalAnd) {
+        colorsQueryStr = `${checkedColors.join(',')}`;
+      } else {
+        colorsQueryStr = `${checkedColors.join('|')}`;
+      }
+    }
+
+    setSearchParams({ card: searchStr, colors: colorsQueryStr });
   }
 
+  const onCheckboxChange = (key: string) => {
+    if (!checkedColors.includes(key)) {
+      setCheckedColors([...checkedColors, key]);
+    } else {
+      setCheckedColors(checkedColors.filter((item) => item !== key))
+    }
+  }
+
+  console.log(logicalAnd)
   if (isLoading) {
     return (
       <StyledHomePage>
@@ -109,6 +200,39 @@ export const HomePage = () => {
             }
           }}
         />
+        <StyledFilters>
+          <div>
+            <input type="checkbox" id="red-checkbox" onChange={() => onCheckboxChange('red')} />
+            <label htmlFor="red-checkbox">Red</label>
+          </div>
+          <div>
+            <input type="checkbox" id="blue-checkbox" onChange={() => onCheckboxChange('blue')} />
+            <label htmlFor="blue-checkbox">Blue</label>
+          </div>
+          <div>
+            <input type="checkbox" id="black-checkbox" onChange={() => onCheckboxChange('black')} />
+            <label htmlFor="black-checkbox">Black</label>
+          </div>
+          <div>
+            <input type="checkbox" id="white-checkbox" onChange={() => onCheckboxChange('white')} />
+            <label htmlFor="white-checkbox">White</label>
+          </div>
+          <div>
+            <input type="checkbox" id="green-checkbox" onChange={() => onCheckboxChange('green')} />
+            <label htmlFor="green-checkbox">Green</label>
+          </div>
+        </StyledFilters>
+        {checkedColors.length > 1 && (
+          <StyledSwitchWrapper>
+            <span>OR</span>
+            <StyledSwitch id="logical-select" type="checkbox" onChange={() => setLogicalAnd(!logicalAnd)} />
+            <StyledSwitchLabel htmlFor="logical-select" />
+            <span>AND</span>
+          </StyledSwitchWrapper>
+        )}
+        <StyledButton type="button" onClick={() => submitSearch()}>
+          <StyledButtonText>Search</StyledButtonText>
+        </StyledButton>
       </StyledFiltersForm>
       <Grid columns={4} >
         {cardData.map((card) => {

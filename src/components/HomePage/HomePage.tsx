@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 // @ts-ignore
 import mtgsdk from 'mtgsdk';
 import { useSearchParams } from 'react-router-dom';
+import Tilt from 'react-parallax-tilt';
 import { Grid, GridItem, GridItemImage } from '../Grid/Grid';
 import Spinner from '../Spinner/Spinner';
 import styled from 'styled-components';
@@ -177,7 +178,6 @@ export const HomePage = () => {
     }
   }
 
-  console.log(logicalAnd)
   if (isLoading) {
     return (
       <StyledHomePage>
@@ -239,9 +239,13 @@ export const HomePage = () => {
         const { name, id, imageUrl } = card;
 
         return (
-          <GridItem key={id} >
-            <GridItemImage src={imageUrl} alt={`${name}-image`} />
-          </GridItem>
+          <div key={id}>
+            <Tilt>
+              <GridItem>
+                <GridItemImage src={imageUrl} alt={`${name}-image`} />
+              </GridItem>
+            </Tilt>
+          </div>
         );
       })}
       </Grid>

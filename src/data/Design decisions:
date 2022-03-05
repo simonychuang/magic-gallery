@@ -8,3 +8,5 @@ dotenv: use environment variables to determine api endpoints, future might use d
 sdk: use the sdk to fetch data instead
 
 inclusion of react-router for url params
+
+separated out pagination component to make it reusable

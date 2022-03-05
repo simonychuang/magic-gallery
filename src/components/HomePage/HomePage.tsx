@@ -25,14 +25,13 @@ const StyledHomePage = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  overflow: auto;
   padding: 0 5em;
   height: 100%;
 `;
 
 const StyledFiltersForm = styled.div`
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   height: 5em;
   width: 80%;

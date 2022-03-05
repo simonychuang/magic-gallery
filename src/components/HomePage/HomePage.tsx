@@ -7,6 +7,7 @@ import Tilt from 'react-parallax-tilt';
 import { Grid, GridItem, GridItemImage } from '../Grid/Grid';
 import Spinner from '../Spinner/Spinner';
 import styled from 'styled-components';
+import { Pagination } from '../Pagination/Pagination';
 
 type CardType = {
   name: string,
@@ -33,8 +34,8 @@ const StyledFiltersForm = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  height: 10em;
-  width: 100%;
+  height: 5em;
+  width: 80%;
 `;
 
 const StyledSearch = styled.input`
@@ -58,6 +59,10 @@ const StyledFilters = styled.div`
   justify-content: center;
   align-items: center;
   margin-left: 2em;
+`;
+
+const StyledCheckbox = styled.div`
+  margin: 0 0.5em;
 `;
 
 const StyledButton = styled.button`
@@ -130,14 +135,16 @@ export const HomePage = () => {
   const [searchParams, setSearchParams] = useSearchParams({});
   const [checkedColors, setCheckedColors] = useState<string[]>([]);
   const [logicalAnd, setLogicalAnd] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const cardQuery = searchParams.get('card') || '';
-  const colorsQuery = searchParams.get('colors')|| '';
+  const colorsQuery = searchParams.get('colors') || '';
+  const pageQuery = searchParams.get('page') || '';
   const [searchStr, setSearchStr] = useState<string>(cardQuery);
 
   useEffect(() => {
     if (cardQuery != null || colorsQuery != null) {
       // handle case where there's search parameters in the url
-      mtgsdk.card.where({ page: 1, pageSize: 12, contains:'imageUrl', name: cardQuery, colors: colorsQuery })
+      mtgsdk.card.where({ page: currentPage, pageSize: 12, contains:'imageUrl', name: cardQuery, colors: colorsQuery })
       .then((cards: CardType[]) => {
         setCardData(cards);
       })
@@ -148,7 +155,11 @@ export const HomePage = () => {
       })
     }
     setIsLoading(false);
-  }, [cardQuery, colorsQuery]);
+  }, [cardQuery, colorsQuery, pageQuery]);
+
+  useEffect(() => {
+    submitSearch();
+  }, [currentPage])
 
   const handleSearchChange = (e: React.FormEvent<HTMLInputElement>) => {
     const card = e.currentTarget.value;
@@ -167,7 +178,7 @@ export const HomePage = () => {
       }
     }
 
-    setSearchParams({ card: searchStr, colors: colorsQueryStr });
+    setSearchParams({ card: searchStr, colors: colorsQueryStr, page: currentPage.toString() });
   }
 
   const onCheckboxChange = (key: string) => {
@@ -176,6 +187,10 @@ export const HomePage = () => {
     } else {
       setCheckedColors(checkedColors.filter((item) => item !== key))
     }
+  }
+
+  const handlePaginationClick = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
   }
 
   if (isLoading) {
@@ -201,26 +216,26 @@ export const HomePage = () => {
           }}
         />
         <StyledFilters>
-          <div>
+          <StyledCheckbox>
             <input type="checkbox" id="red-checkbox" onChange={() => onCheckboxChange('red')} />
             <label htmlFor="red-checkbox">Red</label>
-          </div>
-          <div>
+          </StyledCheckbox>
+          <StyledCheckbox>
             <input type="checkbox" id="blue-checkbox" onChange={() => onCheckboxChange('blue')} />
             <label htmlFor="blue-checkbox">Blue</label>
-          </div>
-          <div>
+          </StyledCheckbox>
+          <StyledCheckbox>
             <input type="checkbox" id="black-checkbox" onChange={() => onCheckboxChange('black')} />
             <label htmlFor="black-checkbox">Black</label>
-          </div>
-          <div>
+          </StyledCheckbox>
+          <StyledCheckbox>
             <input type="checkbox" id="white-checkbox" onChange={() => onCheckboxChange('white')} />
             <label htmlFor="white-checkbox">White</label>
-          </div>
-          <div>
+          </StyledCheckbox>
+          <StyledCheckbox>
             <input type="checkbox" id="green-checkbox" onChange={() => onCheckboxChange('green')} />
             <label htmlFor="green-checkbox">Green</label>
-          </div>
+          </StyledCheckbox>
         </StyledFilters>
         {checkedColors.length > 1 && (
           <StyledSwitchWrapper>
@@ -249,6 +264,7 @@ export const HomePage = () => {
         );
       })}
       </Grid>
+      <Pagination currentPage={currentPage} onPageClick={handlePaginationClick} />
     </StyledHomePage>
   )
 }

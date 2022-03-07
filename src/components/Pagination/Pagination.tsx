@@ -14,6 +14,7 @@ const StyledPaginationWrapper = styled.div`
   justify-content: center;
   align-items: center;
   text-align: center;
+  margin: 2rem 0;
 `;
 
 const StyledPaginationButton = styled.button`
@@ -79,7 +80,10 @@ const StyledPaginationArrowRight = styled.i`
 
 const StyledSelectedPagination = styled.button`
   border: none;
-  background-color: #ffffff;
+  background: transparent;
+  height: 2rem;
+  width: 2rem;
+  margin: 0 0.5rem;
   color: #0295a6;
   font-size: 1.4rem;
   font-weight: 600;
@@ -100,14 +104,16 @@ const StyledSelectedPaginationText = styled.span`
 
 const StyledPagination = styled.button`
   border: none;
-  background-color: #ffffff;
+  background: transparent;
+  height: 2rem;
+  width: 2rem;
+  margin: 0 0.5rem;
   font-size: 1.4rem;
   font-weight: 600;
   cursor: pointer;
 
   &:hover
   &:enabled {
-    background-color: #eaeaea;
     transition: background-color 0.2s;
   }
 `;
@@ -123,7 +129,7 @@ const StyledPaginationText = styled.span`
   }
 `;
 
-export const Pagination = (props:PaginationProps) => {
+export const Pagination = (props: PaginationProps) => {
   const { currentPage = 1, itemsPerPage = 12, numberOfItems = 100, onPageClick } = props;
 
   const numberOfPages = Math.ceil(numberOfItems / itemsPerPage);

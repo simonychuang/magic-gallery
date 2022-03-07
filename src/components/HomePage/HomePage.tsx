@@ -4,10 +4,11 @@ import React, { useState, useEffect } from 'react';
 import mtgsdk from 'mtgsdk';
 import { useSearchParams } from 'react-router-dom';
 import Tilt from 'react-parallax-tilt';
-import { Grid, GridItem, GridItemImage } from '../Grid/Grid';
-import Spinner from '../Spinner/Spinner';
 import styled from 'styled-components';
+import { Grid, GridItem, GridItemImage } from '../Grid/Grid';
+import { Spinner } from '../Spinner/Spinner';
 import { Pagination } from '../Pagination/Pagination';
+import { CardDetails } from '../CardDetails/CardDetails';
 
 type CardType = {
   name: string,
@@ -16,6 +17,11 @@ type CardType = {
   cmc: string,
   colors: string[],
   id: string;
+  imageUrl: string,
+};
+
+type ExpandedCardType = {
+  name: string,
   imageUrl: string,
 };
 
@@ -42,6 +48,7 @@ const StyledSearch = styled.input`
   border: 1px solid #abadae;
   height: 3em;
   width: 30%;
+  padding-left: 1em;
   box-shadow: 0 1px 0 0 rgba(46, 50, 53, 0.1);
 
   &:hover {
@@ -128,6 +135,11 @@ const StyledSwitch = styled.input`
   }
 `;
 
+const initialExpandedCard: ExpandedCardType = {
+  name: '',
+  imageUrl: '',
+};
+
 export const HomePage = () => {
   const [cardData, setCardData] = useState<CardType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -135,6 +147,7 @@ export const HomePage = () => {
   const [checkedColors, setCheckedColors] = useState<string[]>([]);
   const [logicalAnd, setLogicalAnd] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [expandedCard, setExpandedCard] = useState<ExpandedCardType>(initialExpandedCard);
   const cardQuery = searchParams.get('card') || '';
   const colorsQuery = searchParams.get('colors') || '';
   const pageQuery = searchParams.get('page') || '';
@@ -186,6 +199,17 @@ export const HomePage = () => {
     } else {
       setCheckedColors(checkedColors.filter((item) => item !== key))
     }
+  }
+
+  const onCardClick = (name: string, imageUrl: string) => {
+    setExpandedCard({
+      name,
+      imageUrl,
+    })
+  }
+
+  const onOverlayClick = () => {
+    setExpandedCard(initialExpandedCard);
   }
 
   const handlePaginationClick = (pageNumber: number) => {
@@ -255,7 +279,7 @@ export const HomePage = () => {
         return (
           <div key={id}>
             <Tilt>
-              <GridItem>
+              <GridItem onClick={() => onCardClick(name, imageUrl)}>
                 <GridItemImage src={imageUrl} alt={`${name}-image`} />
               </GridItem>
             </Tilt>
@@ -264,6 +288,9 @@ export const HomePage = () => {
       })}
       </Grid>
       <Pagination currentPage={currentPage} onPageClick={handlePaginationClick} />
+      {expandedCard.name && (
+        <CardDetails cardName={expandedCard.name} cardImage={expandedCard.imageUrl} onClose={() => onOverlayClick()} />
+      )}
     </StyledHomePage>
   )
 }

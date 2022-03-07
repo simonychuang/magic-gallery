@@ -34,7 +34,7 @@ const StyledSpinner = styled.svg`
   }
 `;
 
-const Spinner = () => {
+export const Spinner = () => {
   return (
     <StyledSpinner viewBox="0 0 50 50">
       <circle
@@ -48,5 +48,3 @@ const Spinner = () => {
     </StyledSpinner>
   )
 };
-
-export default Spinner;

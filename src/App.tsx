@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { HomePage } from './components/HomePage/HomePage';
 
-export const App = () => {
+export const App: FunctionComponent = () => {
   return (
     <BrowserRouter>
       <HomePage />

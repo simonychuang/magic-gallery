@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
 const StyledSpinner = styled.svg`
@@ -34,7 +34,7 @@ const StyledSpinner = styled.svg`
   }
 `;
 
-export const Spinner = () => {
+export const Spinner: FunctionComponent = () => {
   return (
     <StyledSpinner viewBox="0 0 50 50">
       <circle

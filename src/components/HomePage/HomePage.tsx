@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FunctionComponent } from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import mtgsdk from 'mtgsdk';
@@ -140,7 +140,7 @@ const initialExpandedCard: ExpandedCardType = {
   imageUrl: '',
 };
 
-export const HomePage = () => {
+export const HomePage: FunctionComponent = () => {
   const [cardData, setCardData] = useState<CardType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchParams, setSearchParams] = useSearchParams({});

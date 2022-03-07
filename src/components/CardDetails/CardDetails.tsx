@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 import Tilt from 'react-parallax-tilt';
 
@@ -33,7 +33,7 @@ const StyledCardDetailWrapper = styled.div`
   padding: 0;
 `;
 
-export const CardDetails = (props: CardDetailsProps) => {
+export const CardDetails: FunctionComponent<CardDetailsProps> = (props: CardDetailsProps) => {
   const { cardName, cardImage, onClose } = props;
 
   return (

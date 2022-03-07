@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
 
 interface PaginationProps {
@@ -129,7 +129,7 @@ const StyledPaginationText = styled.span`
   }
 `;
 
-export const Pagination = (props: PaginationProps) => {
+export const Pagination: FunctionComponent<PaginationProps> = (props: PaginationProps) => {
   const { currentPage = 1, itemsPerPage = 12, numberOfItems = 100, onPageClick } = props;
 
   const numberOfPages = Math.ceil(numberOfItems / itemsPerPage);

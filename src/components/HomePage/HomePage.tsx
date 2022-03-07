@@ -10,14 +10,51 @@ import { Spinner } from '../Spinner/Spinner';
 import { Pagination } from '../Pagination/Pagination';
 import { CardDetails } from '../CardDetails/CardDetails';
 
-type CardType = {
-  name: string,
-  names: string[],
-  manaCost: string,
-  cmc: string,
-  colors: string[],
-  id: string;
+type ForeignNameType = {
+  flavor?: string | null,
   imageUrl: string,
+  laguage: string,
+  multiverseId: number,
+  name: string,
+  text: string,
+  type: string,
+}
+
+type CardType = {
+  artist: string,
+  cmc: number,
+  colorIdentity: string[],
+  colors: string[],
+  foreignNames: ForeignNameType[],
+  id: string,
+  imageUrl: string,
+  layout: string,
+  legalities: {
+    format: string,
+    legality: string,
+  }[],
+  manaCost: string,
+  multiverseId: string,
+  name: string,
+  number: string,
+  originalText: string,
+  originalType: string,
+  power: string,
+  printings: string[],
+  rarity: string,
+  rulings: {
+    date: string,
+    text: string,
+  }[],
+  set: string,
+  setName: string,
+  subTypes: string[],
+  supertypes: string[],
+  text: string,
+  toughness: string,
+  type: string,
+  types: string[],
+  variations: string[],
 };
 
 type ExpandedCardType = {
@@ -144,24 +181,25 @@ export const HomePage: FunctionComponent = () => {
   const [cardData, setCardData] = useState<CardType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchParams, setSearchParams] = useSearchParams({});
-  const [checkedColors, setCheckedColors] = useState<string[]>([]);
-  const [logicalAnd, setLogicalAnd] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [expandedCard, setExpandedCard] = useState<ExpandedCardType>(initialExpandedCard);
   const cardQuery = searchParams.get('card') || '';
   const colorsQuery = searchParams.get('colors') || '';
   const pageQuery = searchParams.get('page') || '';
   const [searchStr, setSearchStr] = useState<string>(cardQuery);
+  const [currentPage, setCurrentPage] = useState<number>(parseInt(pageQuery));
+  const parsedColorQuery = colorsQuery.includes('|') ? colorsQuery.split('|') : colorsQuery.split(',');
+  const [checkedColors, setCheckedColors] = useState<string[]>((colorsQuery ? parsedColorQuery : []));
+  const [logicalAnd, setLogicalAnd] = useState<boolean>((colorsQuery && colorsQuery.includes(',')) ? true : false);
 
   useEffect(() => {
-    if (cardQuery != null || colorsQuery != null) {
+    if (cardQuery != null || colorsQuery != null || pageQuery != null) {
       // handle case where there's search parameters in the url
       mtgsdk.card.where({ page: currentPage, pageSize: 12, contains:'imageUrl', name: cardQuery, colors: colorsQuery })
       .then((cards: CardType[]) => {
         setCardData(cards);
       })
     } else {
-      mtgsdk.card.where({ page: 1, pageSize: 12, contains:'imageUrl' })
+      mtgsdk.card.where({ page: currentPage, pageSize: 12, contains:'imageUrl' })
       .then((cards: CardType[]) => {
         setCardData(cards);
       })
@@ -240,30 +278,30 @@ export const HomePage: FunctionComponent = () => {
         />
         <StyledFilters>
           <StyledCheckbox>
-            <input type="checkbox" id="red-checkbox" onChange={() => onCheckboxChange('red')} />
+            <input checked={checkedColors.includes('red')} type="checkbox" id="red-checkbox" onChange={() => onCheckboxChange('red')} />
             <label htmlFor="red-checkbox">Red</label>
           </StyledCheckbox>
           <StyledCheckbox>
-            <input type="checkbox" id="blue-checkbox" onChange={() => onCheckboxChange('blue')} />
+            <input checked={checkedColors.includes('blue')} type="checkbox" id="blue-checkbox" onChange={() => onCheckboxChange('blue')} />
             <label htmlFor="blue-checkbox">Blue</label>
           </StyledCheckbox>
           <StyledCheckbox>
-            <input type="checkbox" id="black-checkbox" onChange={() => onCheckboxChange('black')} />
+            <input checked={checkedColors.includes('black')} type="checkbox" id="black-checkbox" onChange={() => onCheckboxChange('black')} />
             <label htmlFor="black-checkbox">Black</label>
           </StyledCheckbox>
           <StyledCheckbox>
-            <input type="checkbox" id="white-checkbox" onChange={() => onCheckboxChange('white')} />
+            <input checked={checkedColors.includes('white')} type="checkbox" id="white-checkbox" onChange={() => onCheckboxChange('white')} />
             <label htmlFor="white-checkbox">White</label>
           </StyledCheckbox>
           <StyledCheckbox>
-            <input type="checkbox" id="green-checkbox" onChange={() => onCheckboxChange('green')} />
+            <input checked={checkedColors.includes('green')} type="checkbox" id="green-checkbox" onChange={() => onCheckboxChange('green')} />
             <label htmlFor="green-checkbox">Green</label>
           </StyledCheckbox>
         </StyledFilters>
         {checkedColors.length > 1 && (
           <StyledSwitchWrapper>
             <span>OR</span>
-            <StyledSwitch id="logical-select" type="checkbox" onChange={() => setLogicalAnd(!logicalAnd)} />
+            <StyledSwitch checked={logicalAnd} id="logical-select" type="checkbox" onChange={() => setLogicalAnd(!logicalAnd)} />
             <StyledSwitchLabel htmlFor="logical-select" />
             <span>AND</span>
           </StyledSwitchWrapper>
@@ -287,7 +325,7 @@ export const HomePage: FunctionComponent = () => {
         );
       })}
       </Grid>
-      <Pagination currentPage={currentPage} onPageClick={handlePaginationClick} />
+      <Pagination itemsPerPage={12} currentPage={currentPage} onPageClick={handlePaginationClick} />
       {expandedCard.name && (
         <CardDetails cardName={expandedCard.name} cardImage={expandedCard.imageUrl} onClose={() => onOverlayClick()} />
       )}

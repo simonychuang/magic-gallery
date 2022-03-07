@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { App } from '../../App';
 
 describe('HomePage', () => {
@@ -6,16 +7,14 @@ describe('HomePage', () => {
     render(<App />);
   });
 
-  test('Search bar', () => {
+  test('Search bar', async () => {
     const searchBar = screen.getByPlaceholderText('Search for a card name');
 
     // Search bar exists
     expect(searchBar).toBeInTheDocument();
 
     // Test typing 'Test' into search
-    fireEvent.change(searchBar, {
-      target: { value: 'Test' },
-    });
+    await userEvent.type(searchBar, 'Test');
     expect(searchBar).toHaveAttribute('value', 'Test');
   });
 
@@ -34,9 +33,9 @@ describe('HomePage', () => {
     expect(blueCheckbox.checked).toEqual(false);
 
     // Test clicking on checkboxes
-    fireEvent.click(redCheckbox);
+    userEvent.click(redCheckbox);
     expect(redCheckbox.checked).toEqual(true);
-    fireEvent.click(blueCheckbox);
+    userEvent.click(blueCheckbox);
     expect(blueCheckbox.checked).toEqual(true);
   });
 

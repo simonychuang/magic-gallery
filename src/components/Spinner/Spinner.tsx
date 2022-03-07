@@ -38,6 +38,7 @@ export const Spinner: FunctionComponent = () => {
   return (
     <StyledSpinner viewBox="0 0 50 50">
       <circle
+        id="loading-circle"
         className="path"
         cx="25"
         cy="25"
@@ -45,6 +46,7 @@ export const Spinner: FunctionComponent = () => {
         fill="none"
         strokeWidth="4"
       />
+      <label htmlFor='loading-circle'>Loading</label>
     </StyledSpinner>
   )
 };

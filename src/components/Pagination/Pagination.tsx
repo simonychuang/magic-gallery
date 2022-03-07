@@ -36,6 +36,10 @@ const StyledPaginationButton = styled.button`
     background: linear-gradient(#f8f8f8, #eaeaea);
     box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.4);
   }
+
+  &:disabled {
+    border: 2px solid #d5d6d6;
+  }
 `;
 
 const StyledPaginationArrowLeftDisabled = styled.i`
@@ -118,7 +122,7 @@ const StyledPagination = styled.button`
   }
 `;
 
-const StyledPaginationText = styled.span`
+const StyledPaginationText = styled.label`
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -162,8 +166,8 @@ export const Pagination: FunctionComponent<PaginationProps> = (props: Pagination
         }
 
         return (
-          <StyledPagination key={pageNumber} onClick={() => onPageClick(pageNumber)}>
-            <StyledPaginationText>{pageNumber}</StyledPaginationText>
+          <StyledPagination id={`page${pageNumber}-button`} key={pageNumber} onClick={() => onPageClick(pageNumber)}>
+            <StyledPaginationText htmlFor={`page${pageNumber}-button`}>{pageNumber}</StyledPaginationText>
           </StyledPagination>
         );
       })}
